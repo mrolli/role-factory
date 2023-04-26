@@ -1,0 +1,5 @@
+---
+Style/FrozenStringLiteralComment:
+  Enabled: false
+Metric/BlockLength:
+  Enabled: false
