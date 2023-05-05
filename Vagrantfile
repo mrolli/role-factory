@@ -33,21 +33,16 @@ Vagrant.configure('2') do |config|
       v.vm.network :private_network, ip: machine[:ip]
       v.vm.box = machine[:box]
     end
-  end
 
-  # config.vm.define "memcached" do |memcached|
-  #   memcached.vm.hostname = "memcached.test"
-  #   memcached.vm.network :private_network, ip: "192.168.2.7"
-  #
-  #   # Run Ansible provisioner once for all VMs at the end.
-  #   memcached.vm.provision "ansible" do |ansible|
-  #     ansible.playbook = "configure.yml"
-  #     ansible.inventory_path = "inventories/vagrant/inventory.ini"
-  #     ansible.limit = "all"
-  #     ansible.extra_vars = {
-  #       ansible_user: 'vagrant',
-  #       ansible_ssh_private_key_file: "~/.vagrant.d/insecure_private_key"
-  #     }
-  #    end
-  # end
+    # # Run Ansible provisioner once for all VMs at the end.
+    # config.vm.provision 'ansible' do |ansible|
+    #   ansible.playbook = 'converge.yml'
+    #   ansible.inventory_path = 'inventories/vagrant/inventory.ini'
+    #   ansible.limit = 'all'
+    #   ansible.extra_vars = {
+    #     ansible_user: 'vagrant',
+    #     ansible_ssh_private_key_file: '~/.vagrant.d/insecure_private_key'
+    #   }
+    # end
+  end
 end
