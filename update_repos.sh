@@ -11,7 +11,7 @@ function __update_repo {
 
   if [ ! -d "$local_repo_path" ]; then
     gh repo clone "$gh_repo"  "$local_repo_path"
-    __fqcn_link "$role"
+    __fqcn_link "$gh_repo"
   fi
 
   git -C "$local_repo_path" fetch --all --prune
