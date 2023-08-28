@@ -1,36 +1,32 @@
 #!/usr/bin/env bash
 
-declare -a repos
-declare -a orgs
+declare -a roles
 
 role_pattern=ansible-role-
-orgs=(
-  idsys-unibe-ch
-  hpc-unibe-ch
-)
+org=id-unibe-ch
 
-function __clone {
-  local gh_repo; gh_repo=$1
-  local target_repo; target_repo=$(__get_clone_dir_for_repo "$gh_repo")
+function __update_repo {
+  local gh_repo; gh_repo="$1"
+  local local_repo_path; local_repo_path=$(__get_clone_dir "$gh_repo")
 
-  if [ ! -d "$target_repo" ]; then
-    gh repo clone "$gh_repo"  "$target_repo"
+  if [ ! -d "$local_repo_path" ]; then
+    gh repo clone "$gh_repo"  "$local_repo_path"
+    __fqcn_link "$role"
   fi
-}
 
-function __update {
-  git -C "$(__get_clone_dir_for_repo "$1")" fetch --all --prune
+  git -C "$local_repo_path" fetch --all --prune
 }
 
 function __fqcn_link {
-  local target_repo; target_repo=$(__get_clone_dir_for_repo "$1")
+  local gh_repo; gh_repo="$1"
+  local local_repo_path; local_repo_path=$(__get_clone_dir "$gh_repo")
 
-  if [ ! -d "$target_repo" ]; then
+  if [ ! -d "$local_repo_path" ]; then
     return 1
   fi
 
-  namespace=$(awk '/namespace:/{print $2}' "$target_repo/meta/main.yml")
-  role_name=$(basename "$target_repo")
+  namespace=$(awk '/namespace:/{print $2}' "$local_repo_path/meta/main.yml")
+  role_name=$(basename "$local_repo_path")
   linkt_target="roles/$namespace.$role_name"
 
   if [ ! -h "$linkt_target" ]; then
@@ -38,18 +34,24 @@ function __fqcn_link {
   fi
 }
 
-function __get_clone_dir_for_repo {
-  echo "roles/${1##*-}"
+function __get_bare_role_of_orgrepo {
+  echo "${1##*-}"
 }
 
-for org in "${orgs[@]}"; do
-  repos+=("$(gh repo list "$org" | awk '/'$role_pattern'/{print $1}')")
-done
+function __get_role_name_orgrepo {
+  echo "${1##*/}"
+}
 
-for repo in "${repos[@]}"; do
-  printf -- "-- Working on %s\n" "$repo"
-  __clone "$repo"
-  __update "$repo"
-  __fqcn_link "$repo"
-  printf -- "-- Done with %s\n\n" "$repo"
+function __get_clone_dir {
+  echo "roles/$(__get_bare_role_of_orgrepo "$1")"
+}
+
+
+# shellcheck disable=SC2207
+roles=($(gh repo list "$org" | awk '/'$role_pattern'/{print $1}'))
+
+for role in "${roles[@]}"; do
+  printf -- "-- Working on %s\n" "$role"
+  __update_repo "$role"
+  printf -- "-- Done with %s\n\n" "$role"
 done
