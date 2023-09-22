@@ -21,6 +21,6 @@ mmolecule() {
     IFS=',' read -rA DISTROS <<< "$distros"
     for dist in "${DISTROS[@]}"; do
       dist=$(echo "$dist" | tr -d '[:space:]')
-      echo MOLECULE_DISTRO="$dist" molecule "$@"
+      MOLECULE_DISTRO="$dist" molecule "$@"
     done
 }
