@@ -2,3 +2,5 @@
 collections:
   - name: containers.podman
     type: galaxy
+  - name: ansible.posix
+    type: galaxy
