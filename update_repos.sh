@@ -51,8 +51,8 @@ function __get_clone_dir {
 # Fetch all roles that match the role_pattern and are not forks or archived
 roles=(
   $(gh repo list "$org" \
-  --json name,isFork,isArchived \
-  --jq '.[] | select((.name | startswith("'$role_prefix'")) and (.isFork == false) and (.isArchived == false)) | .name')
+  --json nameWithOwner,isFork,isArchived \
+  --jq '.[] | select((.nameWithOwner | contains("'$role_prefix'")) and (.isFork == false) and (.isArchived == false)) | .nameWithOwner')
 )
 
 for role in "${roles[@]}"; do
