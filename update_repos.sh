@@ -2,7 +2,7 @@
 
 declare -a roles
 
-role_pattern=ansible-role-
+role_prefix=ansible-role-
 org=id-unibe-ch
 
 function __update_repo {
@@ -35,7 +35,7 @@ function __fqcn_link {
 }
 
 function __get_bare_role_of_orgrepo {
-  echo "${1##*-}"
+  echo "${1##*"$role_prefix"}"
 }
 
 function __get_role_name_orgrepo {
@@ -48,10 +48,16 @@ function __get_clone_dir {
 
 
 # shellcheck disable=SC2207
-roles=($(gh repo list "$org" | awk '/'$role_pattern'/{print $1}'))
+# Fetch all roles that match the role_pattern and are not forks or archived
+roles=(
+  $(gh repo list "$org" \
+  --json name,isFork,isArchived \
+  --jq '.[] | select((.name | startswith("'$role_prefix'")) and (.isFork == false) and (.isArchived == false)) | .name')
+)
 
 for role in "${roles[@]}"; do
   printf -- "-- Working on %s\n" "$role"
   __update_repo "$role"
+  ./set_repository_settings.sh $role
   printf -- "-- Done with %s\n\n" "$role"
 done
