@@ -1,4 +1,4 @@
 .vagrant
-collections
-roles
+ansible_collections/
+roles/
 temp/

@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+ansible-core = "*"
+# The next one is needed as crypt is not supported on macOS
+passlib = "*"
+# The next packages are used for linting/static code checks
+ansible-lint = "*"
+molecule = "*"
+molecule-podman = "*"
+pre-commit = "*"
+yamllint = "*"
